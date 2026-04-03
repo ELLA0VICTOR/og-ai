@@ -1,4 +1,4 @@
-import logging
+﻿import logging
 from typing import Optional
 
 import opengradient as og
@@ -20,15 +20,7 @@ def get_llm() -> og.LLM:
             kwargs['llm_server_url'] = settings.OG_LLM_SERVER_URL
 
         _llm = og.LLM(**kwargs)
-
-        try:
-            _llm.ensure_opg_approval(opg_amount=10.0)
-        except Exception as exc:
-            message = str(exc).lower()
-            if any(fragment in message for fragment in ('nonce too low', 'already known', 'replacement transaction underpriced')):
-                logger.warning('Skipping duplicate approval attempt: %s', exc)
-            else:
-                raise
+        logger.info('OpenGradient LLM client initialized')
 
     return _llm
 

@@ -1,162 +1,208 @@
-# OG AI
+﻿# OG AI
 
-> The OpenGradient builder copilot. Docs-grounded. TEE-verified.
+> OpenGradient builder copilot. Docs-grounded. TEE-backed. Deployment-ready.
 
-## What is OG AI?
+## What It Is
 
-OG AI is a production-ready developer copilot for the OpenGradient ecosystem. Every answer is:
-- **Grounded** in the official OpenGradient documentation (RAG over real doc chunks)
-- **Generated** through OpenGradient's own TEE LLM inference (`opengradient==0.9.0`)
-- **Verified** on-chain via SETTLE_METADATA — every response produces a cryptographic attestation and Base Sepolia transaction hash
+OG AI is a specialized developer assistant for the OpenGradient ecosystem. It helps builders:
+- ask questions about the docs
+- debug integration and deployment issues
+- plan OpenGradient-native app architectures
+- generate current SDK snippets
 
-## Features
+The app uses:
+- a local RAG layer over curated OpenGradient documentation
+- OpenGradient TEE LLM inference through `opengradient==0.9.0`
+- a React + Vite frontend
+- a FastAPI backend
 
-- **Ask Docs** — RAG-powered Q&A over official OG documentation
-- **Debug Error** — Paste an error/traceback, get root cause + fix with doc citations
-- **Build Planner** — Describe an app idea, receive a structured OG architecture plan
-- **Snippet Mode** — Get minimal working code examples grounded in the 0.9.0 SDK
-- Streaming responses via SSE
-- Source citations with links to official docs
-- Attestation badge on every AI message (TEE verified)
-- On-chain payment hash via SETTLE_METADATA
-- Recent question history
+## Modes
+
+- `Ask Docs`: docs-grounded Q&A over OpenGradient concepts and SDK usage
+- `Debug Error`: troubleshooting for payment, deployment, CORS, DNS, approval, and runtime issues
+- `Build Planner`: structured architecture plans for OpenGradient apps
+- `Snippet Mode`: minimal working examples aligned to the current SDK surface
+
+## Current SDK Surface
+
+OG AI is intentionally biased toward the current direct-entrypoint SDK style:
+- `llm = og.LLM(private_key=...)`
+- `await llm.chat(...)`
+- `await llm.completion(...)`
+- `alpha = og.Alpha(private_key=...)`
+- `alpha.infer(model_cid=..., inference_mode=..., model_input=...)`
+- `hub = og.ModelHub(email=..., password=...)`
+
+It is designed to correct stale `client.*` examples instead of reinforcing them.
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
-| Frontend | Vite + React 19 + TailwindCSS v3 |
-| Backend | Python + FastAPI |
-| AI Inference | `opengradient==0.9.0` (TEE LLM) |
-| RAG | `sentence-transformers` (all-MiniLM-L6-v2) + cosine similarity |
-| Streaming | `sse-starlette` (backend) + `ReadableStream` (frontend) |
+| --- | --- |
+| Frontend | React + Vite |
+| Backend | FastAPI + Uvicorn |
+| SDK | `opengradient==0.9.0` |
+| Retrieval | `sentence-transformers` + cosine similarity |
+| Streaming | SSE |
 | Payments | $OPG on Base Sepolia via x402 |
-| Deploy | Vercel (frontend) + Render (backend) |
+| Deploy | Vercel + Render |
+
+## Project Structure
+
+```text
+og-ai/
+├─ backend/
+│  ├─ app/
+│  ├─ requirements.txt
+│  └─ .env.example
+├─ frontend/
+│  ├─ src/
+│  └─ .env.example
+└─ README.md
+```
 
 ## Prerequisites
 
-- Python 3.10+
+- Python 3.12 recommended
 - Node.js 18+
-- An Ethereum wallet with $OPG testnet tokens on Base Sepolia
-  - Get tokens: https://faucet.opengradient.ai/
-  - $OPG token: `0x240b09731D96979f50B2C649C9CE10FcF9C7987F`
+- Base Sepolia wallet with:
+  - `$OPG` for OpenGradient requests
+  - Base Sepolia ETH for approval / gas when needed
 
-## Setup — Backend
+## Local Development
 
-```bash
+### Backend
+
+```cmd
 cd backend
 python -m venv venv
-source venv/bin/activate        # Windows (WSL): source venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env            # Add your OG_PRIVATE_KEY
-uvicorn app.main:app --reload
+venv\Scripts\activate
+python -m pip install -r requirements.txt
+copy .env.example .env
+python -m uvicorn app.main:app --reload
 ```
 
-The backend will:
-1. Initialize the OpenGradient client
-2. Run `ensure_opg_approval(10.0)` — one-time Permit2 authorization
-3. Build sentence-transformer embeddings for all 26 doc chunks
+Backend URL:
+- `http://localhost:8000`
 
-Backend runs at: http://localhost:8000
+Notes:
+- use `python -m uvicorn ...` so the project venv is definitely used
+- the backend will try a best-effort approval check at startup
+- if Base Sepolia DNS or wallet state is unhealthy, startup should warn instead of crashing
 
-## Setup — Frontend
+### Frontend
 
-```bash
+```cmd
 cd frontend
 npm install
-cp .env.example .env            # Set VITE_API_URL=http://localhost:8000
+copy .env.example .env
 npm run dev
 ```
 
-Frontend runs at: http://localhost:5173
+Frontend URL:
+- `http://localhost:5173`
 
 ## Environment Variables
 
-### backend/.env
+### `backend/.env`
 
 | Variable | Required | Description |
-|----------|----------|-------------|
-| `OG_PRIVATE_KEY` | Yes | `0x`-prefixed Ethereum private key, wallet funded with $OPG on Base Sepolia |
-| `CORS_ORIGINS` | No | Comma-separated allowed origins. Default: `http://localhost:5173` |
-| `OG_MODEL` | No | TEE LLM model key. Default: `GEMINI_2_5_FLASH` |
-| `TOP_K_CHUNKS` | No | Number of RAG chunks to retrieve per query. Default: `5` |
+| --- | --- | --- |
+| `OG_PRIVATE_KEY` | Yes | Backend wallet private key used for OpenGradient requests |
+| `CORS_ORIGINS` | No | Comma-separated allowed origins |
+| `OG_MODEL` | No | Default TEE model value, e.g. `google/gemini-2.5-flash` |
+| `OG_SETTLEMENT_MODE` | No | `PRIVATE`, `BATCH_HASHED`, or `INDIVIDUAL_FULL`. Default: `BATCH_HASHED` |
+| `TOP_K_CHUNKS` | No | Number of retrieved docs chunks per query |
+| `OG_LLM_SERVER_URL` | No | Optional low-level LLM endpoint override. Leave unset unless intentionally pinning a known endpoint |
 
-### frontend/.env
+### `frontend/.env`
 
 | Variable | Required | Description |
-|----------|----------|-------------|
-| `VITE_API_URL` | No | Backend URL. Default: `http://localhost:8000` |
+| --- | --- | --- |
+| `VITE_API_URL` | No | Backend base URL. Default: `http://localhost:8000` |
 
-## How It Works
+## Runtime Notes
 
-```
-User Query
-    │
-    ▼
-RAG Retrieval (sentence-transformers cosine similarity)
-    │
-    ├─ Top 5 doc chunks retrieved from knowledge base
-    │
-    ▼
-Prompt Construction (system + context + history + query)
-    │
-    ▼
-og.client.llm.chat() → TEE Node (Intel TDX)
-    │                        │
-    │                        └─ Routes to: OpenAI / Anthropic / Google / xAI
-    │
-    ├─ Streaming chunks → SSE → Frontend ReadableStream
-    │
-    └─ payment_hash → Base Sepolia tx (SETTLE_METADATA)
-                          │
-                          └─ Attestation badge in UI
-```
+- `BATCH_HASHED` is the safer default for normal OG AI testing because it is cheaper than forcing full settlement for every request.
+- If live inference hits a real `402 Payment Required`, OG AI now returns a structured diagnostic answer instead of just surfacing the raw upstream error.
+- The most common live failure buckets are:
+  - insufficient `$OPG`
+  - missing Permit2 approval
+  - no Base Sepolia ETH for approval gas
+  - stale `OG_LLM_SERVER_URL` override
+  - deployed env / SDK / interpreter drift
+
+## API
+
+| Endpoint | Method | Purpose |
+| --- | --- | --- |
+| `/api/health` | `GET` | health check |
+| `/api/ask` | `POST` | main docs / debug / planner / snippet route |
+| `/api/sources` | `GET` | knowledge-base source summaries |
 
 ## Deployment
 
-### Backend (Render)
+### Render Backend
 
-1. Connect your GitHub repo to Render
-2. Create a new **Web Service**
-3. Set build command: `pip install -r requirements.txt`
-4. Set start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Add environment variables: `OG_PRIVATE_KEY`, `CORS_ORIGINS` (your Vercel URL)
+Use these settings:
+- Service type: `Web Service`
+- Root directory: `backend`
+- Build command: `pip install -r requirements.txt`
+- Start command: `python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 
-> Note: First deploy downloads sentence-transformers model (~90MB) — may take 2-3 minutes.
+Recommended Render env vars:
 
-### Frontend (Vercel)
+```env
+OG_PRIVATE_KEY=0x...
+CORS_ORIGINS=https://your-frontend.vercel.app
+OG_MODEL=google/gemini-2.5-flash
+OG_SETTLEMENT_MODE=BATCH_HASHED
+TOP_K_CHUNKS=5
+```
 
-1. Import the frontend folder to Vercel
-2. Framework preset: **Vite**
-3. Build command: `npm run build`
-4. Output directory: `dist`
-5. Add environment variable: `VITE_API_URL=https://your-render-service.onrender.com`
+Optional only if intentionally pinned:
 
-## API Reference
+```env
+OG_LLM_SERVER_URL=https://your-tee-endpoint
+```
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `GET /api/health` | GET | Backend health check |
-| `POST /api/ask` | POST | Main Q&A (streaming SSE or non-streaming) |
-| `POST /api/debug` | POST | Error debugging |
-| `POST /api/plan` | POST | Build planning |
-| `GET /api/sources` | GET | All knowledge base chunk summaries |
+### Vercel Frontend
 
-## Knowledge Base
+If deploying the full repo:
+- Root directory: `frontend`
+- Framework preset: `Vite`
 
-26 documentation chunks covering:
-- SDK installation and credentials
-- LLM chat and completion APIs
-- Streaming, tool calling, settlement modes
-- TEE verification and supported models
-- x402 Gateway (HTTP and JavaScript)
-- ML inference and workflows (alpha testnet)
-- Official workflow contract addresses
-- Model Hub management
-- MemSync memory layer
-- Network info (RPC, explorer, faucet)
-- LangChain integration
-- Common errors and troubleshooting
+Environment variable:
+
+```env
+VITE_API_URL=https://your-render-service.onrender.com
+```
+
+## GitHub Push Checklist
+
+Before pushing:
+- make sure `.env` files are ignored
+- make sure no private key is committed
+- confirm `backend/.env.example` and `frontend/.env.example` are present
+- confirm README matches current deployment flow
+
+Typical commands:
+
+```cmd
+cd C:\Users\hp\Desktop\og-ai
+git status
+git add .
+git commit -m "Finalize OG AI for deployment"
+git push origin main
+```
+
+## Suggested Smoke Tests
+
+After deployment, test these:
+1. `Ask Docs`: `Explain when I should choose og.LLM vs og.Alpha vs og.ModelHub.`
+2. `Snippet Mode`: `Show me a FastAPI route that calls og.LLM and returns content plus metadata.`
+3. `Debug Error`: `My Render backend works locally but deployed requests fail with CORS in the browser.`
+4. `Build Planner`: `I want to build a verifiable AI due diligence app on OpenGradient with React + FastAPI. What architecture should I use?`
 
 ## License
 

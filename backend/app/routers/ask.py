@@ -12,30 +12,34 @@ router = APIRouter()
 
 class AskRequest(BaseModel):
     question: str
-    mode: str = 'ask'  # ask | debug | plan | snippet
+    mode: str = 'ask'
     history: list = Field(default_factory=list)
     stream: bool = True
 
 
 @router.post('/ask')
 async def ask_endpoint(body: AskRequest):
-    if body.stream:
-        chunks_for_sources = retrieve(body.question)
-        sources_data = [
-            {
-                'id': c['id'],
-                'title': c['title'],
-                'url': c['url'],
-                'section': c['section'],
-            }
-            for c in chunks_for_sources
-        ]
+    chunks_for_sources = retrieve(body.question)
+    sources_data = [
+        {
+            'id': c['id'],
+            'title': c['title'],
+            'url': c['url'],
+            'section': c['section'],
+        }
+        for c in chunks_for_sources
+    ]
 
+    if body.stream:
         async def event_stream():
             yield f"data: {json.dumps({'type': 'sources', 'sources': sources_data})}\n\n"
             try:
-                async for text in stream_response(body.question, body.mode, body.history):
-                    yield f"data: {json.dumps({'type': 'chunk', 'content': text})}\n\n"
+                if body.mode in {'plan', 'snippet'}:
+                    result = await get_response(body.question, body.mode, body.history)
+                    yield f"data: {json.dumps({'type': 'chunk', 'content': result['content']})}\n\n"
+                else:
+                    async for text in stream_response(body.question, body.mode, body.history):
+                        yield f"data: {json.dumps({'type': 'chunk', 'content': text})}\n\n"
             except Exception as exc:
                 yield f"data: {json.dumps({'type': 'error', 'message': str(exc)})}\n\n"
             yield f"data: {json.dumps({'type': 'done'})}\n\n"
@@ -56,5 +60,5 @@ async def ask_endpoint(body: AskRequest):
         return {
             'content': f'Error generating response: {str(exc)}',
             'payment_hash': None,
-            'sources': [],
+            'sources': sources_data,
         }

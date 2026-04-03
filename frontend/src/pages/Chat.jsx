@@ -14,22 +14,22 @@ const SUGGESTIONS = {
     'How do x402 settlement modes differ?',
   ],
   debug: [
-    'Permit2 approval error on startup',
-    'Insufficient $OPG balance when calling llm.chat()',
-    'chunk.choices[0].delta.content returns None',
-    'ZKML inference fails with opset error',
+    'Why is llm.ensure_opg_approval() failing even though my wallet is funded?',
+    'My browser hits a CORS error against my Render backend. How do I debug it?',
+    'I pinned llm_server_url and now requests fail. What should I check?',
+    'How do I separate a frontend bug from an OpenGradient SDK bug?',
   ],
   plan: [
-    'I want to build a DeFi risk analyzer using on-chain ML',
-    'Build an AI agent that monitors crypto prices and alerts me',
-    'Create a medical documentation assistant with TEE privacy',
-    'Build a decentralized AI API with payment per call',
+    'I want to build a verifiable AI due diligence app using React and FastAPI. What architecture should I use?',
+    'I want a prediction dashboard comparing OpenGradient models. What should stay off-chain vs verified?',
+    'I want to build a docs assistant with RAG and OpenGradient inference. Give me a production-ready architecture.',
+    'I want a community showcase app with AI summaries and attestations. What is the simplest OG-native stack?',
   ],
   snippet: [
-    'Show me a minimal LLM chat call with streaming',
-    'Code for og.LLM chat with tool calling',
-    'Example of deploying an ML workflow',
-    'Show me the LangChain adapter setup',
+    'Show me a minimal async og.LLM chat example with streaming.',
+    'Show me a FastAPI route that calls og.LLM and returns content plus metadata.',
+    'Show me a minimal alpha.infer example for a model CID.',
+    'Show me how to initialize og.ModelHub and upload an ONNX file.',
   ],
 }
 
@@ -141,7 +141,7 @@ function EmptyState({ mode, suggestions, onSuggestion }) {
     ask: 'Ask anything about the OpenGradient SDK, x402 protocol, or developer docs.',
     debug: 'Paste an error or traceback and get a root-cause analysis with fix.',
     plan: 'Describe your app idea and get a structured OG architecture plan.',
-    snippet: 'Request a working code snippet grounded in the opengradient==0.9.0 SDK.',
+    snippet: 'Request a working code snippet grounded in the current OpenGradient SDK surface.',
   }
 
   return (
