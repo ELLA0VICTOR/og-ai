@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react'
+﻿import { useEffect, useRef, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import ChatMessage from '../components/chat/ChatMessage'
@@ -84,15 +84,7 @@ export default function Chat() {
         onQuestionClick={handleQuestionClick}
         onClear={clearHistory}
       >
-        <div
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '24px 24px 8px',
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
+        <div className="chat-scroll-region">
           {messages.length === 0 ? (
             <EmptyState
               mode={currentMode}
@@ -145,86 +137,25 @@ function EmptyState({ mode, suggestions, onSuggestion }) {
   }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-        minHeight: '400px',
-        gap: '24px',
-        padding: '40px 0',
-      }}
-    >
-      <div
-        style={{
-          fontFamily: 'var(--font-ui)',
-          fontWeight: 800,
-          fontSize: '52px',
-          color: 'rgba(255,255,255,0.06)',
-          letterSpacing: '-0.04em',
-          lineHeight: 1,
-          userSelect: 'none',
-        }}
-      >
-        OG AI
-      </div>
+    <div className="chat-empty-state">
+      <div className="chat-empty-state__brand">OG AI</div>
 
-      <div style={{ textAlign: 'center', maxWidth: '420px' }}>
-        <p
-          style={{
-            fontFamily: 'var(--font-ui)',
-            fontSize: '15px',
-            color: 'var(--text-secondary)',
-            marginBottom: '4px',
-          }}
-        >
+      <div className="chat-empty-state__copy">
+        <p className="chat-empty-state__description">
           {modeDescriptions[mode]}
         </p>
-        <p
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            color: 'var(--text-muted)',
-            letterSpacing: '0.08em',
-          }}
-        >
+        <p className="chat-empty-state__hint">
           CLICK A SUGGESTION OR TYPE BELOW
         </p>
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '7px',
-          width: '100%',
-          maxWidth: '520px',
-        }}
-      >
+      <div className="chat-empty-state__suggestions">
         {suggestions.map((suggestion, i) => (
           <button
             key={i}
             onClick={() => onSuggestion(suggestion)}
-            className="fade-in"
-            style={{
-              padding: '10px 14px',
-              background: 'var(--bg-card)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: '2px',
-              cursor: 'pointer',
-              fontFamily: 'var(--font-ui)',
-              fontSize: '13px',
-              color: 'var(--text-secondary)',
-              textAlign: 'left',
-              transition: 'all 150ms ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              animationDelay: `${i * 60}ms`,
-              opacity: 0,
-            }}
+            className="chat-suggestion-button fade-in"
+            style={{ animationDelay: `${i * 60}ms`, opacity: 0 }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = 'var(--accent-border)'
               e.currentTarget.style.color = 'var(--text-primary)'
@@ -236,7 +167,7 @@ function EmptyState({ mode, suggestions, onSuggestion }) {
               e.currentTarget.style.background = 'var(--bg-card)'
             }}
           >
-            {suggestion}
+            <span>{suggestion}</span>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ flexShrink: 0, marginLeft: '8px', color: 'var(--text-muted)' }}>
               <path d="M2 6h8M7 3l3 3-3 3" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>

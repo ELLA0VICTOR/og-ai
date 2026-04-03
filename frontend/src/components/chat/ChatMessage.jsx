@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import CodeBlock from '../ui/CodeBlock'
 import SourceChips from './SourceChips'
 import { parseContent, parseInlineCode, truncateHash } from '../../lib/utils'
@@ -27,22 +27,8 @@ export default function ChatMessage({
 
   if (role === 'user') {
     return (
-      <div className="fade-in" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-        <div
-          style={{
-            maxWidth: '85%',
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '2px',
-            padding: '10px 14px',
-            fontFamily: 'var(--font-ui)',
-            fontSize: '14px',
-            color: 'var(--text-primary)',
-            lineHeight: 1.6,
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
-          }}
-        >
+      <div className="fade-in chat-message-user-wrap">
+        <div className="chat-message-user-bubble">
           {content}
         </div>
       </div>
@@ -52,22 +38,9 @@ export default function ChatMessage({
   const segments = parseContent(content)
 
   return (
-    <div
-      className="fade-in"
-      style={{
-        marginBottom: '24px',
-        borderLeft: '2px solid var(--accent)',
-        paddingLeft: '16px',
-      }}
-    >
+    <div className="fade-in chat-message-assistant-wrap">
       <div
-        style={{
-          fontFamily: 'var(--font-ui)',
-          fontSize: '14px',
-          color: 'var(--text-primary)',
-          lineHeight: 1.75,
-        }}
-        className={isStreaming && content ? 'cursor-blink' : ''}
+        className={isStreaming && content ? 'cursor-blink chat-message-body' : 'chat-message-body'}
       >
         {segments.length === 0 && isStreaming ? (
           <span className="cursor-blink" style={{ color: 'var(--text-muted)' }}>&nbsp;</span>
@@ -85,15 +58,7 @@ export default function ChatMessage({
                     return (
                       <code
                         key={j}
-                        style={{
-                          fontFamily: 'var(--font-code)',
-                          fontSize: '12px',
-                          background: 'var(--bg-elevated)',
-                          border: '1px solid var(--border-subtle)',
-                          borderRadius: '2px',
-                          padding: '1px 5px',
-                          color: 'var(--accent)',
-                        }}
+                        className="chat-inline-code"
                       >
                         {part.content}
                       </code>
@@ -116,33 +81,12 @@ export default function ChatMessage({
       {sources && sources.length > 0 && <SourceChips sources={sources} />}
 
       {(paymentHash || content?.trim()) && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '12px',
-            marginTop: '12px',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ minHeight: '28px', display: 'flex', alignItems: 'center' }}>
+        <div className="chat-message-actions">
+          <div className="chat-message-verify-slot">
             {paymentHash && (
               <button
                 onClick={() => onAttestationClick && onAttestationClick(paymentHash)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 0,
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '11px',
-                  color: 'var(--text-muted)',
-                  transition: 'color 150ms ease',
-                }}
+                className="chat-message-verify"
                 onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
                 onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
               >
@@ -158,7 +102,7 @@ export default function ChatMessage({
                   }}
                 />
                 TEE Verified
-                <span style={{ color: 'var(--border-active)', margin: '0 2px' }}>�</span>
+                <span style={{ color: 'var(--border-active)', margin: '0 2px' }}>·</span>
                 <span style={{ color: 'var(--accent)' }}>{truncateHash(paymentHash, 6, 4)}</span>
                 <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" strokeWidth="1.2">
                   <path d="M1.5 4.5H7.5M5 2L7.5 4.5L5 7" strokeLinecap="round" strokeLinejoin="round"/>
@@ -170,21 +114,11 @@ export default function ChatMessage({
           <button
             onClick={handleCopy}
             disabled={!content?.trim()}
+            className="chat-message-copy"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '7px',
-              minHeight: '28px',
-              padding: '0 10px',
-              border: '1px solid rgba(255,255,255,0.08)',
               background: copied ? 'rgba(36,179,189,0.08)' : 'rgba(255,255,255,0.02)',
               color: copied ? 'var(--accent)' : 'var(--text-secondary)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
               cursor: content?.trim() ? 'pointer' : 'not-allowed',
-              transition: 'all 150ms ease',
             }}
             onMouseEnter={(e) => {
               if (content?.trim()) {
@@ -207,7 +141,7 @@ export default function ChatMessage({
       )}
 
       {isStreaming && !content && (
-        <div style={{ display: 'flex', gap: '4px', alignItems: 'center', padding: '4px 0' }}>
+        <div className="chat-message-thinking">
           {[0, 1, 2].map((i) => (
             <span
               key={i}

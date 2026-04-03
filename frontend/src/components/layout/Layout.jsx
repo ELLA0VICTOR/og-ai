@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 
@@ -6,17 +6,8 @@ export default function Layout({ children, currentMode, onModeChange, onQuestion
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        height: '100%',
-        position: 'relative',
-        zIndex: 1,
-        overflow: 'hidden',
-      }}
-    >
-      {/* Desktop sidebar */}
-      <div className="sidebar-desktop" style={{ display: 'flex' }}>
+    <div className="layout-root">
+      <div className="sidebar-desktop">
         <Sidebar
           currentMode={currentMode}
           onModeChange={onModeChange}
@@ -25,32 +16,13 @@ export default function Layout({ children, currentMode, onModeChange, onQuestion
         />
       </div>
 
-      {/* Mobile sidebar overlay */}
       {mobileMenuOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 100,
-            display: 'flex',
-          }}
-        >
-          {/* Backdrop */}
+        <div className="layout-mobile-overlay">
           <div
+            className="layout-mobile-backdrop"
             onClick={() => setMobileMenuOpen(false)}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: 'rgba(0,0,0,0.6)',
-            }}
           />
-          {/* Sidebar */}
-          <div
-            style={{
-              position: 'relative',
-              zIndex: 1,
-            }}
-          >
+          <div className="layout-mobile-panel">
             <Sidebar
               currentMode={currentMode}
               onModeChange={(mode) => {
@@ -70,9 +42,7 @@ export default function Layout({ children, currentMode, onModeChange, onQuestion
         </div>
       )}
 
-      {/* Main content */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
-        {/* TopBar — always visible */}
+      <div className="layout-main">
         <TopBar
           currentMode={currentMode}
           onMenuToggle={() => setMobileMenuOpen((v) => !v)}

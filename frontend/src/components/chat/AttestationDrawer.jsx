@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { truncateHash } from '../../lib/utils'
 
 export default function AttestationDrawer({ isOpen, onClose, paymentHash, model }) {
@@ -16,69 +16,20 @@ export default function AttestationDrawer({ isOpen, onClose, paymentHash, model 
 
   return (
     <>
-      {/* Backdrop */}
       <div
         onClick={onClose}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(0,0,0,0.5)',
-          zIndex: 49,
-        }}
+        className="attestation-backdrop"
       />
 
-      {/* Drawer */}
-      <div
-        className="drawer-in"
-        style={{
-          position: 'fixed',
-          right: 0,
-          top: 0,
-          height: '100%',
-          width: '320px',
-          background: 'var(--bg-surface)',
-          borderLeft: '1px solid var(--border-default)',
-          zIndex: 50,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '16px 20px',
-            borderBottom: '1px solid var(--border-subtle)',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: 'var(--font-ui)',
-              fontWeight: 600,
-              fontSize: '14px',
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            Attestation
-          </span>
+      <div className="drawer-in attestation-drawer">
+        <div className="attestation-drawer__header">
+          <span className="attestation-drawer__title">Attestation</span>
           <button
             onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--text-muted)',
-              padding: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              transition: 'color 150ms ease',
-            }}
+            className="attestation-drawer__close"
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-primary)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+            aria-label="Close attestation drawer"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M3 3L13 13M13 3L3 13" strokeLinecap="round"/>
@@ -86,13 +37,11 @@ export default function AttestationDrawer({ isOpen, onClose, paymentHash, model 
           </button>
         </div>
 
-        {/* Content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
-          {/* Status row */}
+        <div className="attestation-drawer__content">
           <Row
             label="Status"
             value={
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                 <span
                   className="pulse-dot"
                   style={{
@@ -115,14 +64,7 @@ export default function AttestationDrawer({ isOpen, onClose, paymentHash, model 
             label="Payment Hash"
             value={
               paymentHash ? (
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '11px',
-                    color: 'var(--text-secondary)',
-                    wordBreak: 'break-all',
-                  }}
-                >
+                <span className="attestation-drawer__hash">
                   {truncateHash(paymentHash, 10, 6)}
                 </span>
               ) : (
@@ -137,29 +79,13 @@ export default function AttestationDrawer({ isOpen, onClose, paymentHash, model 
           <Row label="Settlement" value="SETTLE_METADATA" mono />
           <Row label="Chain ID" value="84532" mono />
 
-          {/* Action buttons */}
-          <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div className="attestation-drawer__actions">
             {basescanUrl && (
               <a
                 href={basescanUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  padding: '9px 14px',
-                  border: '1px solid var(--accent-border)',
-                  borderRadius: '2px',
-                  color: 'var(--accent)',
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  textDecoration: 'none',
-                  transition: 'all 150ms ease',
-                  background: 'var(--accent-glow)',
-                }}
+                className="attestation-drawer__action attestation-drawer__action--primary"
                 onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--accent-dim)')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--accent-glow)')}
               >
@@ -174,21 +100,7 @@ export default function AttestationDrawer({ isOpen, onClose, paymentHash, model 
               href="https://explorer.opengradient.ai/"
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-                padding: '9px 14px',
-                border: '1px solid var(--border-default)',
-                borderRadius: '2px',
-                color: 'var(--text-secondary)',
-                fontFamily: 'var(--font-ui)',
-                fontSize: '13px',
-                fontWeight: 500,
-                textDecoration: 'none',
-                transition: 'all 150ms ease',
-              }}
+              className="attestation-drawer__action"
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = 'var(--border-active)'
                 e.currentTarget.style.color = 'var(--text-primary)'
@@ -205,23 +117,10 @@ export default function AttestationDrawer({ isOpen, onClose, paymentHash, model 
             </a>
           </div>
 
-          {/* TEE explainer */}
           <div style={{ marginTop: '24px' }}>
             <button
               onClick={() => setTeeExpanded((v) => !v)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: 'var(--font-ui)',
-                fontSize: '12px',
-                color: 'var(--text-muted)',
-                padding: 0,
-                transition: 'color 150ms ease',
-              }}
+              className="attestation-drawer__toggle"
               onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
               onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
             >
@@ -243,20 +142,9 @@ export default function AttestationDrawer({ isOpen, onClose, paymentHash, model 
             </button>
 
             {teeExpanded && (
-              <p
-                className="fade-in"
-                style={{
-                  marginTop: '10px',
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: '12px',
-                  color: 'var(--text-muted)',
-                  lineHeight: 1.7,
-                  borderLeft: '2px solid var(--border-default)',
-                  paddingLeft: '10px',
-                }}
-              >
+              <p className="fade-in attestation-drawer__explain">
                 A Trusted Execution Environment (TEE) is an isolated hardware enclave
-                powered by Intel TDX. Your prompt runs inside this enclave — even the
+                powered by Intel TDX. Your prompt runs inside this enclave - even the
                 node operator cannot read the computation. Every inference produces a
                 cryptographic attestation anchored on-chain, providing verifiable proof
                 that a specific model processed your exact query.
@@ -271,23 +159,8 @@ export default function AttestationDrawer({ isOpen, onClose, paymentHash, model 
 
 function Row({ label, value, mono = false }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '3px',
-        marginBottom: '16px',
-      }}
-    >
-      <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '10px',
-          color: 'var(--text-muted)',
-          letterSpacing: '0.06em',
-          textTransform: 'uppercase',
-        }}
-      >
+    <div className="attestation-row">
+      <span className="attestation-row__label">
         {label}
       </span>
       {typeof value === 'string' ? (
@@ -296,6 +169,7 @@ function Row({ label, value, mono = false }) {
             fontFamily: mono ? 'var(--font-mono)' : 'var(--font-ui)',
             fontSize: mono ? '12px' : '13px',
             color: 'var(--text-primary)',
+            wordBreak: 'break-word',
           }}
         >
           {value}

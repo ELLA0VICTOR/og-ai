@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 
 export default function CodeBlock({ code, language = 'text' }) {
   const [copied, setCopied] = useState(false)
@@ -9,7 +9,6 @@ export default function CodeBlock({ code, language = 'text' }) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      // fallback for older browsers
       const el = document.createElement('textarea')
       el.value = code
       document.body.appendChild(el)
@@ -22,56 +21,15 @@ export default function CodeBlock({ code, language = 'text' }) {
   }
 
   return (
-    <div
-      style={{
-        background: '#0a0a0a',
-        border: '1px solid var(--border-subtle)',
-        borderRadius: '2px',
-        overflow: 'hidden',
-        margin: '8px 0',
-      }}
-    >
-      {/* Header bar */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '6px 12px',
-          borderBottom: '1px solid var(--border-subtle)',
-          background: '#0d0d0d',
-        }}
-      >
-        {/* Language badge */}
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            color: 'var(--accent)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-          }}
-        >
+    <div className="code-block-shell">
+      <div className="code-block-header">
+        <span className="code-block-language">
           {language}
         </span>
 
-        {/* Copy button */}
         <button
           onClick={handleCopy}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            color: copied ? 'var(--accent)' : 'var(--text-muted)',
-            letterSpacing: '0.08em',
-            padding: '2px 4px',
-            transition: 'color 150ms ease',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-          }}
+          className="code-block-copy"
         >
           {copied ? (
             <>
@@ -86,19 +44,7 @@ export default function CodeBlock({ code, language = 'text' }) {
         </button>
       </div>
 
-      {/* Code area */}
-      <pre
-        style={{
-          fontFamily: 'var(--font-code)',
-          fontSize: '13px',
-          lineHeight: '1.6',
-          padding: '16px',
-          overflowX: 'auto',
-          color: 'var(--text-primary)',
-          whiteSpace: 'pre',
-          margin: 0,
-        }}
-      >
+      <pre className="code-block-pre">
         <code>{code}</code>
       </pre>
     </div>

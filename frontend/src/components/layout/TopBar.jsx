@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import { modeName } from '../../lib/utils'
 
 export default function TopBar({ currentMode, onMenuToggle }) {
@@ -12,35 +12,14 @@ export default function TopBar({ currentMode, onMenuToggle }) {
   }
 
   return (
-    <div
-      style={{
-        height: '48px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 16px',
-        borderBottom: '1px solid var(--border-subtle)',
-        background: 'var(--bg-surface)',
-        position: 'relative',
-        zIndex: 1,
-        gap: '12px',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+    <div className="topbar-root">
+      <div className="topbar-left">
         <button
           onClick={onMenuToggle}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--text-secondary)',
-            display: 'flex',
-            alignItems: 'center',
-            padding: '4px',
-            transition: 'color 150ms ease',
-          }}
+          className="topbar-menu-button"
           onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-primary)')}
           onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
+          aria-label="Toggle navigation"
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
             <path d="M2 4h14M2 9h14M2 14h14"/>
@@ -49,23 +28,7 @@ export default function TopBar({ currentMode, onMenuToggle }) {
 
         <button
           onClick={() => navigate('/')}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            height: '30px',
-            padding: '0 10px',
-            border: '1px solid rgba(255,255,255,0.08)',
-            background: 'rgba(255,255,255,0.02)',
-            color: 'var(--text-secondary)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            cursor: 'pointer',
-            transition: 'all 150ms ease',
-            whiteSpace: 'nowrap',
-          }}
+          className="topbar-home-button"
           onMouseEnter={(e) => {
             e.currentTarget.style.color = 'var(--text-primary)'
             e.currentTarget.style.borderColor = 'var(--accent-border)'
@@ -84,38 +47,21 @@ export default function TopBar({ currentMode, onMenuToggle }) {
         </button>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+      <div className="topbar-center">
+        <span className="topbar-brand">OG AI</span>
         <span
+          className="topbar-mode-pill"
           style={{
-            fontFamily: 'var(--font-ui)',
-            fontWeight: 700,
-            fontSize: '14px',
-            color: 'var(--text-primary)',
-            letterSpacing: '-0.02em',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          OG AI
-        </span>
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
             color: modeColors[currentMode] || 'var(--accent)',
             background: `${modeColors[currentMode] || 'var(--accent)'}18`,
             border: `1px solid ${modeColors[currentMode] || 'var(--accent)'}44`,
-            borderRadius: '2px',
-            padding: '1px 6px',
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            whiteSpace: 'nowrap',
           }}
         >
           {modeName(currentMode)}
         </span>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
+      <div className="topbar-right">
         <span
           className="pulse-dot"
           style={{
@@ -126,16 +72,7 @@ export default function TopBar({ currentMode, onMenuToggle }) {
             display: 'inline-block',
           }}
         />
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--text-muted)',
-            letterSpacing: '0.06em',
-          }}
-        >
-          TEE
-        </span>
+        <span className="topbar-status-text">TEE</span>
       </div>
     </div>
   )
