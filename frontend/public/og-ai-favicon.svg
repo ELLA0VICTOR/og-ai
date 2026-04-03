@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" fill="#000000"/>
+  <!-- O glyph: angular/geometric -->
+  <path d="M4 8 L4 24 L13 24 L13 21 L7 21 L7 11 L13 11 L13 8 Z" fill="#24B3BD"/>
+  <!-- G glyph -->
+  <path d="M16 8 L16 24 L28 24 L28 16 L22 16 L22 19 L25 19 L25 21 L19 21 L19 11 L28 11 L28 8 Z" fill="#24B3BD"/>
+</svg>
