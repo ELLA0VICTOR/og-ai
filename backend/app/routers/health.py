@@ -6,9 +6,9 @@ from app.rag.knowledge_base import DOCS
 router = APIRouter()
 
 
-@router.get("/health")
+@router.get('/health')
 async def health_check():
-    """Check backend health: OG client and embeddings status."""
+    """Check backend health and whether the lightweight retrieval index has warmed."""
     og_llm_ok = False
     try:
         llm = get_llm()
@@ -16,14 +16,13 @@ async def health_check():
     except Exception:
         og_llm_ok = False
 
-    embeddings_ok = is_embeddings_loaded()
+    retrieval_index_loaded = is_embeddings_loaded()
 
-    status = "ok" if (og_llm_ok and embeddings_ok) else "degraded"
+    status = 'ok' if og_llm_ok else 'degraded'
 
     return {
-        "status": status,
-        "og_llm": og_llm_ok,
-        "embeddings_loaded": embeddings_ok,
-        "chunk_count": len(DOCS),
+        'status': status,
+        'og_llm': og_llm_ok,
+        'retrieval_index_loaded': retrieval_index_loaded,
+        'chunk_count': len(DOCS),
     }
-
