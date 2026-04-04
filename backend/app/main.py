@@ -4,27 +4,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.og_client import get_llm
-from app.rag.embeddings import build_embeddings
 from app.routers import ask, debug, plan, sources, health
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print('Initializing OpenGradient client...')
-    llm = get_llm()
+    get_llm()
     print(f'OpenGradient model target: {settings.OG_MODEL}')
-
-    print('Ensuring OPG Permit2 approval...')
-    try:
-        llm.ensure_opg_approval(opg_amount=10.0)
-        print('Permit2 approval check completed')
-    except Exception as exc:
-        print(f'Permit2 approval warning: {exc}')
-
-    print('Building knowledge base embeddings...')
-    build_embeddings()
-    print(f'Embeddings built for {len(__import__("app.rag.knowledge_base", fromlist=["DOCS"]).DOCS)} chunks')
-
+    print('Skipping eager approval and embedding warmup during startup.')
     print('OG AI backend ready.')
     yield
     print('OG AI backend shutting down.')
