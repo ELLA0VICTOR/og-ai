@@ -1,20 +1,20 @@
-﻿from typing import AsyncGenerator
+from typing import AsyncGenerator
 
 import opengradient as og
 
 from app.config import settings
-from app.og_client import get_llm, get_model
+from app.og_client import ensure_wallet_ready, get_llm, get_model
 from app.services.prompt_builder import build_messages
 from app.rag.retrieval import retrieve
 
 ENCODING_REPLACEMENTS = {
-    'â€”': '-',
-    'â€“': '-',
-    'Â·': '-',
-    'â†’': '->',
-    'â€™': "'",
-    'â€œ': '"',
-    'â€': '"',
+    '—': '-',
+    '–': '-',
+    '·': '-',
+    '→': '->',
+    '’': "'",
+    '“': '"',
+    '”': '"',
 }
 
 TEXT_REPLACEMENTS = [
@@ -157,6 +157,7 @@ async def stream_response(
     history: list | None = None,
 ) -> AsyncGenerator[str, None]:
     llm = get_llm()
+    ensure_wallet_ready()
     chunks = retrieve(question)
     messages = build_messages(question, chunks, mode, history)
 
@@ -195,6 +196,7 @@ async def get_response(
     history: list | None = None,
 ) -> dict:
     llm = get_llm()
+    ensure_wallet_ready()
     chunks = retrieve(question)
     messages = build_messages(question, chunks, mode, history)
 
@@ -241,3 +243,5 @@ async def get_response(
             for c in chunks
         ],
     }
+
+

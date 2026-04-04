@@ -1,4 +1,4 @@
-﻿from typing import List
+from typing import List
 
 import opengradient as og
 from pydantic_settings import BaseSettings
@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = 'http://localhost:5173'
     OG_MODEL: str = 'google/gemini-2.5-flash'
     OG_SETTLEMENT_MODE: str = 'BATCH_HASHED'
+    OG_APPROVAL_AMOUNT: float = 10.0
     TOP_K_CHUNKS: int = 5
 
     model_config = {'env_file': '.env', 'extra': 'ignore'}
